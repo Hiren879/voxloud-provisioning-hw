@@ -9,9 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.voxloud.provisioning.deviceservice.DeviceConfiguration;
 import com.voxloud.provisioning.entity.Device;
-import com.voxloud.provisioning.entity.Device.DeviceModel;
+import com.voxloud.provisioning.enums.DeviceModel;
 import com.voxloud.provisioning.exception.DeviceTypeNotSupportedException;
-import com.voxloud.provisioning.exception.GenericException;
 import com.voxloud.provisioning.exception.ResourceNotFoundException;
 import com.voxloud.provisioning.repository.DeviceRepository;
 import com.voxloud.provisioning.validation.MacAddressValidator;
@@ -41,36 +40,29 @@ public class ProvisioningServiceImpl implements ProvisioningService {
 
 	public String getProvisioningFile(String macAddress) {
 
-		try {
-			// 1. Validate incoming parameters
-			MacAddressValidator.validateMacAddress(macAddress);
+		// 1. Validate incoming parameters
+		MacAddressValidator.validateMacAddress(macAddress);
 
-			// 2. Fetch data from DB for given macAddress or throw exception
-			Device device = deviceRepository.findById(macAddress).orElseThrow(
-					() -> new ResourceNotFoundException("Device is not found with mac-address : " + macAddress));
+		// 2. Fetch data from DB for given macAddress or throw exception
+		Device device = deviceRepository.findById(macAddress).orElseThrow(
+				() -> new ResourceNotFoundException("Device is not found with mac-address : " + macAddress));
 
-			// 3. Call service based on Device Type
-			DeviceModel deviceModel = device.getModel();
-			LOGGER.info("DeviceType for macAddress :: {} found is :: {}", macAddress, String.valueOf(deviceModel));
+		// 3. Call service based on Device Type
+		DeviceModel deviceModel = device.getModel();
+		LOGGER.info("DeviceType for macAddress :: {} found is :: {}", macAddress, String.valueOf(deviceModel));
 
-			if (device.getModel() != null && deviceModel == DeviceModel.DESK) {
-				// 3.1 : Desk Config call
-				LOGGER.info("Calling desk device config for macAddress :: {}", macAddress);
-				return deskDeviceConfiguration.generateDeviceConfigFile(device);
-			} else if (device.getModel() != null && deviceModel == DeviceModel.CONFERENCE) {
-				// 3.2 : Conference Config call
-				LOGGER.info("Calling conference device config for macAddress :: {}", macAddress);
-				return conferenceDeviceConfiguration.generateDeviceConfigFile(device);
-			} else {
-				throw new DeviceTypeNotSupportedException(
-						"Contact Support !! Currently this device type is not supported => "
-								+ String.valueOf(device.getModel()));
-			}
-		} catch (Exception e) {
-			// 4. Handle generic exception
-			LOGGER.error("Exception occurred while proceesing the request. ", e);
-			throw new GenericException("Exception occurred while proceesing the request for macAddress :: " + macAddress
-					+ ". Exception is ::  " + e.getMessage());
+		if (device.getModel() != null && deviceModel == DeviceModel.DESK) {
+			// 3.1 : Desk Config call
+			LOGGER.info("Calling desk device config for macAddress :: {}", macAddress);
+			return deskDeviceConfiguration.generateDeviceConfigFile(device);
+		} else if (device.getModel() != null && deviceModel == DeviceModel.CONFERENCE) {
+			// 3.2 : Conference Config call
+			LOGGER.info("Calling conference device config for macAddress :: {}", macAddress);
+			return conferenceDeviceConfiguration.generateDeviceConfigFile(device);
+		} else {
+			throw new DeviceTypeNotSupportedException(
+					"Contact Support !! Currently this device type is not supported => "
+							+ String.valueOf(device.getModel()));
 		}
 	}
 }

@@ -6,6 +6,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
+import com.voxloud.provisioning.enums.DeviceModel;
+
 import lombok.Data;
 
 @Entity
@@ -26,9 +28,4 @@ public class Device {
     private String username;
 
     private String password;
-
-    public enum DeviceModel {
-        CONFERENCE,
-        DESK
-    }
 }

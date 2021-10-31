@@ -40,36 +40,32 @@ public class ConferenceDeviceConfigurationImpl implements DeviceConfiguration {
 		String macAddress = device.getMacAddress();
 		LOGGER.info("Configuring the device for macAddress :: {} of type :: {}", macAddress,
 				String.valueOf(device.getModel()));
-		try {
-			// 1. Get the userName-password &common props
-			Map<String, Object> responseMap = ProvisioningUtility.getUserNamePasswordMap(device);
-			responseMap.putAll(provisioningProps.getCommonPropsMap());
+		// 1. Get the userName-password &common props
+		Map<String, Object> responseMap = ProvisioningUtility.getUserNamePasswordMap(device);
+		responseMap.putAll(provisioningProps.getCommonPropsMap());
 
-			// 2. Get the codecs & convert it into List and replace it in Map
-			List<String> codesList = Stream.of(
-										responseMap.get(ProvisioningConstant.CODECS)
-										.toString()
-										.split(","))
+		// 2. Get the codecs & convert it into List and replace it in Map
+		List<String> codesList = Stream.of(
+									responseMap.get(ProvisioningConstant.CODECS)
+									.toString()
+									.split(","))
 									.collect(Collectors.toList());
-			responseMap.put(ProvisioningConstant.CODECS, codesList);
+		responseMap.put(ProvisioningConstant.CODECS, codesList);
 
-			// 3. Check for the Override fragment
-			if (StringUtils.isNoneBlank(device.getOverrideFragment())) {
-				ObjectMapper mapper = new ObjectMapper();
-				try {
-					LOGGER.info("Converting fragments into map for macAddress :: {}", macAddress);
-					Map<String, Object> overrideFragmentMap = mapper.readValue(device.getOverrideFragment(),
-							new TypeReference<Map<String, Object>>() {});
-					responseMap.putAll(overrideFragmentMap);
-				} catch (JsonProcessingException e) {
-					LOGGER.error("Exception occurred while converting data into objectMapper.", e);
-					throw new GenericException(e.getMessage());
-				}
+		// 3. Check for the Override fragment
+		if (StringUtils.isNoneBlank(device.getOverrideFragment())) {
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				LOGGER.info("Converting fragments into map for macAddress :: {}", macAddress);
+				Map<String, Object> overrideFragmentMap = mapper.readValue(device.getOverrideFragment(),
+						new TypeReference<Map<String, Object>>() {
+						});
+				responseMap.putAll(overrideFragmentMap);
+			} catch (JsonProcessingException e) {
+				LOGGER.error("Exception occurred while converting data into objectMapper.", e);
+				throw new GenericException(e.getMessage());
 			}
-			return ProvisioningUtility.convertMapToJsonFile(responseMap);
-		} catch (Exception e) {
-			LOGGER.error("Exception occurred while processing data for conference device.", e);
-			throw new GenericException(e.getMessage());
 		}
+		return ProvisioningUtility.convertMapToJsonFile(responseMap);
 	}
 }
