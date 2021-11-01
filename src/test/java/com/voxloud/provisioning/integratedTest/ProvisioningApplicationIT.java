@@ -1,4 +1,4 @@
-package com.voxloud.provisioning;
+package com.voxloud.provisioning.integratedTest;
 
 import static org.junit.Assert.assertEquals;
 
