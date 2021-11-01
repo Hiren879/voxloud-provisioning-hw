@@ -9,8 +9,13 @@ import org.springframework.context.annotation.PropertySource;
 
 import com.voxloud.provisioning.constant.ProvisioningConstant;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Configuration
 @PropertySource("classpath:application.properties")
+@Getter
+@Setter
 public class ProvisioningProps {
 
 	@Value("${provisioning.domain}")
@@ -21,30 +26,6 @@ public class ProvisioningProps {
 
 	@Value("${provisioning.codecs}")
 	private String codes;
-
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-
-	public String getPort() {
-		return port;
-	}
-
-	public void setPort(String port) {
-		this.port = port;
-	}
-
-	public String getCodes() {
-		return codes;
-	}
-
-	public void setCodes(String codes) {
-		this.codes = codes;
-	}
 
 	public Map<String, Object> getCommonPropsMap() {
 		Map<String, Object> commonPropsMap = new HashMap<>();
