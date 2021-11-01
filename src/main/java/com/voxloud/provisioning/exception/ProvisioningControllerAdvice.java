@@ -51,6 +51,7 @@ public class ProvisioningControllerAdvice extends ResponseEntityExceptionHandler
 		exceptionResponse.setTimeStamp(LocalDateTime.now().toString());
 		exceptionResponse.setUrl(request.getRequestURI());
 		exceptionResponse.setStatusCode(HttpStatus.NOT_FOUND);
+		logException(exceptionResponse);
 
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
 	}
@@ -63,6 +64,7 @@ public class ProvisioningControllerAdvice extends ResponseEntityExceptionHandler
 		exceptionResponse.setTimeStamp(LocalDateTime.now().toString());
 		exceptionResponse.setUrl(request.getRequestURI());
 		exceptionResponse.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR);
+		logException(exceptionResponse);
 
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
